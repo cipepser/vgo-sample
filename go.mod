@@ -7,3 +7,5 @@ require (
 )
 
 exclude rsc.io/sampler v1.99.99
+
+replace rsc.io/quote v1.5.2 => ../quote

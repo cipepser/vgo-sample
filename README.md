@@ -355,7 +355,43 @@ ok  	rsc.io/quote	(cached)
 ok  	rsc.io/sampler	(cached)
 ```
 
+### Replace
 
+依存していた`rsc.io/quote`を置き換えてみる。
+
+```sh
+❯ git clone https://github.com/rsc/quote ../quote
+```
+
+`../quote/quote.go`を以下のように書き換える。
+
+```go
+// Hello returns a greeting.
+func Hello() string {
+	// return sampler.Hello() // これを消して
+	return sampler.Glass() // こっちを追加
+}
+```
+
+`go.mod`の末尾に`replace "rsc.io/quote" v1.5.2 => "../quote"`を追記する。
+すると以下のようにreplaceされていることが確認できる。
+
+```sh
+❯ vgo list -m all
+github.com/you/hello
+golang.org/x/text v0.3.0
+rsc.io/quote v1.5.2 => ../quote
+rsc.io/sampler v1.3.1
+```
+
+buildして実行する。
+
+```sh
+❯ vgo build
+
+❯ ./hello
+私はガラスを食べられます。それは私を傷つけません。
+```
 
 ## references
 * [A Tour of Versioned Go (vgo) (Go & Versioning, Part 2)](https://research.swtch.com/vgo-tour)
