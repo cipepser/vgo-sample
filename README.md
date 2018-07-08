@@ -294,6 +294,68 @@ vgo: downloading rsc.io/quote v1.3.0
 ok  	rsc.io/quote	0.009s
 ```
 
+### Exclude
+
+`v1.99.99`がうまく動かないことを記録したい。
+
+事前準備として、最新化しておく。
+
+```sh
+❯ vgo get -u
+vgo: finding rsc.io/quote latest
+vgo: finding golang.org/x/text latest
+vgo: finding rsc.io/quote latest
+vgo: finding rsc.io/sampler latest
+vgo: finding golang.org/x/text latest
+vgo: finding rsc.io/sampler latest
+```
+
+たしかに`v1.99.99`になっている。
+
+```sh
+❯ vgo list -m all
+github.com/you/hello
+golang.org/x/text v0.3.0
+rsc.io/quote v1.5.2
+rsc.io/sampler v1.99.99
+```
+
+`go.mod`に`exclude "rsc.io/sampler" v1.99.99`を追加すればよい。
+ただし、2018/07/08時点ではうまく動かない。
+
+```sh
+❯ vgo get -u
+vgo: github.com/you/hello() depends on excluded rsc.io/sampler(v1.99.99) with no newer version available
+```
+
+`go.mod`で`rsc.io/sampler v1.3.1`のようにすればうまくいく。
+自動的にexcludeされていない最新とかにしてほしいが、vgoの考え方として、minimal version selectionがあるのでそうはならないような気もする。
+ともかく、`go.mod`で直接指定すれば以下のように問題なく動く。
+`-t`オプションがないとexcludeは旨味が可視化されないが、上記のように`vgo get -u`で弾かれるので運用も含めると失敗するのはいいことだと思う。
+
+```sh
+❯ vgo get -u
+vgo: finding golang.org/x/text latest
+vgo: finding rsc.io/quote latest
+vgo: finding rsc.io/sampler latest
+vgo: finding golang.org/x/text latest
+vgo: finding rsc.io/sampler latest
+```
+
+```sh
+❯ vgo test all
+?   	github.com/you/hello	0.016s [no test files]
+?   	golang.org/x/text/internal/gen	0.021s [no test files]
+ok  	golang.org/x/text/internal/tag	(cached)
+?   	golang.org/x/text/internal/testtext	0.021s [no test files]
+ok  	golang.org/x/text/internal/ucd	(cached)
+ok  	golang.org/x/text/language	(cached)
+ok  	golang.org/x/text/unicode/cldr	(cached)
+ok  	rsc.io/quote	(cached)
+ok  	rsc.io/sampler	(cached)
+```
+
+
 
 ## references
 * [A Tour of Versioned Go (vgo) (Go & Versioning, Part 2)](https://research.swtch.com/vgo-tour)
