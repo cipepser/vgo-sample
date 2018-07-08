@@ -198,6 +198,102 @@ FAIL
 FAIL	rsc.io/sampler	0.014s
 ```
 
+### Downgrade
+
+2018/07/08時点では、`vgo list -t`が使えないらしい。
+
+https://github.com/golang/go/issues/25656
+
+
+今回は`v1.3.1`に戻せることを知っている前提で先に進む。
+
+```sh
+❯ vgo get rsc.io/sampler@v1.3.1
+vgo: finding rsc.io/sampler v1.3.1
+vgo: downloading rsc.io/sampler v1.3.1
+```
+
+`rsc.io/sampler`が`v1.99.99`から`v1.3.1`にdowngradeされた。
+
+```sh
+❯ git diff go.mod
+diff --git a/go.mod b/go.mod
+index 6246735..a62aa4e 100644
+--- a/go.mod
++++ b/go.mod
+@@ -3,4 +3,5 @@ module github.com/you/hello
+ require (
+        golang.org/x/text v0.3.0
+        rsc.io/quote v1.5.2
++       rsc.io/sampler v1.3.1
+ )
+```
+
+ちゃんとテストも通る。
+
+```sh
+❯ vgo test all
+?   	github.com/you/hello	0.021s [no test files]
+?   	golang.org/x/text/internal/gen	0.020s [no test files]
+ok  	golang.org/x/text/internal/tag	(cached)
+?   	golang.org/x/text/internal/testtext	0.031s [no test files]
+ok  	golang.org/x/text/internal/ucd	(cached)
+ok  	golang.org/x/text/language	(cached)
+ok  	golang.org/x/text/unicode/cldr	(cached)
+ok  	rsc.io/quote	0.016s
+ok  	rsc.io/sampler	0.015s
+```
+
+もっと前のversion`v.1.2.0`にすると、`rsc.io/quote`も依存しているので一緒にdowngradeする必要がある。
+
+```sh
+❯ vgo get rsc.io/sampler@v1.2.0
+vgo: finding rsc.io/sampler v1.2.0
+vgo: finding rsc.io/quote v1.5.1
+vgo: finding rsc.io/quote v1.5.0
+vgo: finding rsc.io/quote v1.4.0
+vgo: finding rsc.io/sampler v1.0.0
+vgo: downloading rsc.io/sampler v1.2.0
+```
+
+実際、テストに失敗する。
+
+```sh
+❯ vgo test all
+vgo: downloading rsc.io/quote v1.4.0
+?   	github.com/you/hello	0.019s [no test files]
+?   	golang.org/x/text/internal/gen	0.023s [no test files]
+ok  	golang.org/x/text/internal/tag	(cached)
+?   	golang.org/x/text/internal/testtext	0.035s [no test files]
+ok  	golang.org/x/text/internal/ucd	(cached)
+ok  	golang.org/x/text/language	(cached)
+ok  	golang.org/x/text/unicode/cldr	(cached)
+--- FAIL: TestHello (0.00s)
+	quote_test.go:12: Hello() = "こんにちは世界。", want "Hello, world."
+FAIL
+FAIL	rsc.io/quote	0.017s
+--- FAIL: TestHello (0.00s)
+	hello_test.go:31: Hello([fr en-US]) = "Bonjour le monde.", want "Bonjour la monde."
+FAIL
+FAIL	rsc.io/sampler	0.012s
+```
+
+`none`で依存しているモジュールをすべて削除できる。
+
+```sh
+❯ vgo get rsc.io/sampler@none
+vgo: finding rsc.io/quote v1.3.0
+```
+
+こうするとテストが通る（全然モジュールが残っていないけど）。
+
+```sh
+❯ vgo test all
+vgo: downloading rsc.io/quote v1.3.0
+?   	github.com/you/hello	0.009s [no test files]
+ok  	rsc.io/quote	0.009s
+```
+
 
 ## references
 * [A Tour of Versioned Go (vgo) (Go & Versioning, Part 2)](https://research.swtch.com/vgo-tour)
