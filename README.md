@@ -36,6 +36,48 @@ func main() {
 
 あとは何も書いていない`go.mod`も作る
 
+### vgo build
+
+```sh
+❯ vgo build
+vgo: resolving import "rsc.io/quote"
+vgo: finding rsc.io/quote v1.5.2
+vgo: finding rsc.io/quote (latest)
+vgo: adding rsc.io/quote v1.5.2
+vgo: finding rsc.io/sampler v1.3.0
+vgo: finding golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+vgo: downloading rsc.io/quote v1.5.2
+vgo: downloading rsc.io/sampler v1.3.0
+vgo: downloading golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+```
+
+ちゃんとbuildされる
+
+```sh
+❯ ./hello
+こんにちは世界。
+```
+
+空だった`go.mod`にも追記されている
+
+```sh
+// go.mod
+module github.com/you/hello
+
+require rsc.io/quote v1.5.2
+```
+
+依存しているモジュールを`vgo list -m`で表示できるっぽいけど、1個しか出てこない？
+→`vgo list -m all`で全部出てくる。
+
+```sh
+❯ vgo list -m all
+github.com/you/hello
+golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+rsc.io/quote v1.5.2
+rsc.io/sampler v1.3.0
+```
+
 
 
 ## references
