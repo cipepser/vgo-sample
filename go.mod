@@ -1,3 +1,6 @@
 module github.com/you/hello
 
-require rsc.io/quote v1.5.2
+require (
+	golang.org/x/text v0.3.0
+	rsc.io/quote v1.5.2
+)

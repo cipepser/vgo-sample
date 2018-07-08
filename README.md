@@ -78,6 +78,55 @@ rsc.io/quote v1.5.2
 rsc.io/sampler v1.3.0
 ```
 
+### Upgrade
+
+`-u`オプションでupdated packageを確認できる。元記事のときから変わって`[]`内にLATESTが表示されるようになったみたい。
+
+```sh
+❯ vgo list -u -m all
+vgo: finding golang.org/x/text v0.3.0
+vgo: finding rsc.io/sampler v1.99.99
+github.com/you/hello
+golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c [v0.3.0]
+rsc.io/quote v1.5.2
+rsc.io/sampler v1.3.0 [v1.99.99]
+```
+
+`golang.org/x/text`をUpgradeしてみる。
+
+```sh
+❯ vgo get golang.org/x/text
+vgo: downloading golang.org/x/text v0.3.0
+```
+
+`go.mod`が変わっている。
+
+```sh
+❯ git diff go.mod
+diff --git a/go.mod b/go.mod
+index 3200210..6246735 100644
+--- a/go.mod
++++ b/go.mod
+@@ -1,3 +1,6 @@
+ module github.com/you/hello
+
+-require rsc.io/quote v1.5.2
++require (
++       golang.org/x/text v0.3.0
++       rsc.io/quote v1.5.2
++)
+```
+
+listで見ても以下のように`v0.0.0-20170915032832-14c0d48ead0c`から`v0.3.0`になっていることがわかる。
+
+```sh
+❯ vgo list -m all
+github.com/you/hello
+golang.org/x/text v0.3.0
+rsc.io/quote v1.5.2
+rsc.io/sampler v1.3.0
+```
+
 
 
 ## references
