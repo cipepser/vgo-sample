@@ -200,12 +200,23 @@ FAIL	rsc.io/sampler	0.014s
 
 ### Downgrade
 
-2018/07/08時点では、`vgo list -t`が使えないらしい。
+~~2018/07/08時点では、`vgo list -t`が使えないらしい。~~
 
-https://github.com/golang/go/issues/25656
+~~https://github.com/golang/go/issues/25656~~
 
+~~今回は`v1.3.1`に戻せることを知っている前提で先に進む。~~
 
-今回は`v1.3.1`に戻せることを知っている前提で先に進む。
+issueがクローズされたので、以下で確認できる。
+
+```sh
+❯ vgo list -m -versions all
+github.com/you/hello
+golang.org/x/text v0.1.0 v0.2.0 v0.3.0
+rsc.io/quote v1.0.0 v1.1.0 v1.2.0 v1.2.1 v1.3.0 v1.4.0 v1.5.0 v1.5.1 v1.5.2 v1.5.3-pre1
+rsc.io/sampler v1.0.0 v1.2.0 v1.2.1 v1.3.0 v1.3.1 v1.99.99
+```
+
+`v1.3.1`へ戻す。
 
 ```sh
 ❯ vgo get rsc.io/sampler@v1.3.1
